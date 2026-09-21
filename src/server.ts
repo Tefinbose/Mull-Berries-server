@@ -32,7 +32,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "mul-berries-client.vercel.app",
+      "https://mul-berries-client.vercel.app",
     ],
     credentials: true,
   })
