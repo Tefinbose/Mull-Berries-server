@@ -2,6 +2,7 @@ import { Response } from "express";
 import mongoose from "mongoose";
 
 import NDR from "../models/NDR";
+import { NDRStatus } from "../models/NDR";
 import Shipment from "../models/Shipment";
 import Order from "../models/Order";
 import { AuthRequest } from "../middleware/authMiddleware";

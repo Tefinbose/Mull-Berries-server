@@ -7,7 +7,7 @@ import Category from "../models/Category";
 // POST /api/categories
 // ==========================================
 export const createCategory = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -76,7 +76,7 @@ export const createCategory = async (
 // GET /api/categories
 // ==========================================
 export const getCategories = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -104,7 +104,7 @@ export const getCategories = async (
 // GET /api/categories/active
 // ==========================================
 export const getActiveCategories = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -134,7 +134,7 @@ export const getActiveCategories = async (
 // GET /api/categories/id/:id
 // ==========================================
 export const getCategoryById = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -177,7 +177,7 @@ export const getCategoryById = async (
 // GET /api/categories/:slug
 // ==========================================
 export const getCategoryBySlug = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -214,7 +214,7 @@ export const getCategoryBySlug = async (
 // PUT /api/categories/:id
 // ==========================================
 export const updateCategory = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -310,7 +310,7 @@ export const updateCategory = async (
 // DELETE /api/categories/:id
 // ==========================================
 export const deleteCategory = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {

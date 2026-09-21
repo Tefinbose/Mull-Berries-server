@@ -336,7 +336,6 @@ export const createStaffReturn = async (
       user: req.userId,
       reason: String(reason).trim(),
       description,
-      returnType,
       status: "requested",
       refundAmount: numericRefundAmount,
       refundMethod,

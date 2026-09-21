@@ -9,7 +9,7 @@ import Category from "../models/Category";
 // ==========================================
 
 export const createProduct = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -111,7 +111,7 @@ export const createProduct = async (
 // ==========================================
 
 export const getProducts = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -139,7 +139,7 @@ export const getProducts = async (
 // ==========================================
 
 export const getProductBySlug = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -188,7 +188,7 @@ export const getProductBySlug = async (
 // ==========================================
 
 export const updateProduct = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {
@@ -307,7 +307,7 @@ export const updateProduct = async (
 // ==========================================
 
 export const deleteProduct = async (
-  req: Request,
+  req: Request<Record<string, string>>,
   res: Response
 ): Promise<void> => {
   try {

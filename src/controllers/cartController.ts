@@ -146,7 +146,7 @@ export const addToCart = async (
         return;
       }
 
-      itemPrice = variant.price;
+      itemPrice = variant.price ?? product.price;
 
       if (variant.stock < quantity) {
         res.status(400).json({
@@ -342,7 +342,7 @@ export const updateCartItem = async (
         return;
       }
 
-      item.price = variant.price;
+      item.price = variant.price ?? product.price;
     } else {
       if (quantity > product.stock) {
         res.status(400).json({

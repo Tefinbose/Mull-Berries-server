@@ -295,7 +295,7 @@ export const createStaffShipment = async (
 
     const shipment = await Shipment.create({
       order: order._id,
-      user: order.user,
+      ...(order.user ? { user: order.user } : {}),
 
       courierName,
       courierProvider,
