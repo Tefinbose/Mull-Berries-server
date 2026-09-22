@@ -19,6 +19,7 @@ import adminRoutes from "./routes/adminRoutes";
 import adminCustomerRoutes from "./routes/adminCustomerRoutes";
 import adminSettingsRoutes from "./routes/adminSettingsRoutes";
 import adminStaffRoutes from "./routes/adminStaffRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use(
   adminCustomerRoutes
 );
 app.use("/api/admin/staff", adminStaffRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 // --------------------
 // Start Server
