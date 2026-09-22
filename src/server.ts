@@ -1,11 +1,16 @@
-import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+
+// =====================================================
+// LOAD ENVIRONMENT VARIABLES FIRST
+// =====================================================
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
 });
+
+import express from "express";
+import cors from "cors";
 
 import connectDB from "./config/db";
 
@@ -24,22 +29,57 @@ import adminSettingsRoutes from "./routes/adminSettingsRoutes";
 import adminStaffRoutes from "./routes/adminStaffRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
+// =====================================================
+// CLOUDINARY ENV CHECK
+// =====================================================
+
+console.log("=================================");
+console.log("CLOUDINARY ENVIRONMENT CHECK");
+console.log("=================================");
+
+console.log(
+  "CLOUDINARY_CLOUD_NAME:",
+  process.env.CLOUDINARY_CLOUD_NAME || "MISSING"
+);
+
+console.log(
+  "CLOUDINARY_API_KEY:",
+  process.env.CLOUDINARY_API_KEY || "MISSING"
+);
+
+console.log(
+  "CLOUDINARY_API_SECRET:",
+  process.env.CLOUDINARY_API_SECRET
+    ? "LOADED"
+    : "MISSING"
+);
+
+console.log("=================================");
+
+// =====================================================
+// APP
+// =====================================================
+
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+// =====================================================
+// CORS
+// =====================================================
+
 const allowedOrigins = [
   "http://localhost:3000",
+
   "https://mul-berries-client.vercel.app",
-  ...(process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
+
+  ...(process.env.CLIENT_URLS ||
+    process.env.CLIENT_URL ||
+    "")
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
 ];
-
-// --------------------
-// Middleware
-// --------------------
 
 app.use(
   cors({
@@ -47,11 +87,22 @@ app.use(
     credentials: true,
   })
 );
+
+// =====================================================
+// BODY PARSER
+// =====================================================
+
 app.use(express.json());
 
-// --------------------
-// API Routes
-// --------------------
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+// =====================================================
+// API ROUTES
+// =====================================================
 
 app.use("/api/auth", authRoutes);
 
@@ -78,36 +129,54 @@ app.use(
   adminSettingsRoutes
 );
 
-// --------------------
-// Health Check
-// --------------------
+app.use(
+  "/api/admin/customers",
+  adminCustomerRoutes
+);
 
-app.get("/", (req, res) => {
+app.use(
+  "/api/admin/staff",
+  adminStaffRoutes
+);
+
+// =====================================================
+// UPLOAD ROUTES
+// =====================================================
+
+app.use(
+  "/api/uploads",
+  uploadRoutes
+);
+
+// =====================================================
+// HEALTH CHECK
+// =====================================================
+
+app.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
     message: "Mulberries backend is running",
   });
 });
-app.use(
-  "/api/admin/customers",
-  adminCustomerRoutes
-);
-app.use("/api/admin/staff", adminStaffRoutes);
-app.use("/api/uploads", uploadRoutes);
 
-// --------------------
-// Start Server
-// --------------------
+// =====================================================
+// START SERVER
+// =====================================================
 
 const startServer = async (): Promise<void> => {
   try {
     await connectDB();
 
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(
+        `Server running on http://localhost:${PORT}`
+      );
     });
   } catch (error) {
-    console.error("Server failed to start:", error);
+    console.error(
+      "Server failed to start:",
+      error
+    );
   }
 };
 
