@@ -24,16 +24,22 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://mul-berries-client.vercel.app",
+  ...(process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
+
 // --------------------
 // Middleware
 // --------------------
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://mul-berries-client.vercel.app",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
