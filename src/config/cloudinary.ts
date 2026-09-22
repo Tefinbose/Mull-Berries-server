@@ -1,48 +1,30 @@
 import { v2 as cloudinary } from "cloudinary";
 
-// =====================================================
-// CHECK ENVIRONMENT VARIABLES
-// =====================================================
+console.log("========== CLOUDINARY CONFIG ==========");
 
-const cloudName =
-  process.env.CLOUDINARY_CLOUD_NAME;
+console.log(
+  "CLOUDINARY_CLOUD_NAME:",
+  process.env.CLOUDINARY_CLOUD_NAME || "MISSING"
+);
 
-const apiKey =
-  process.env.CLOUDINARY_API_KEY;
+console.log(
+  "CLOUDINARY_API_KEY:",
+  process.env.CLOUDINARY_API_KEY || "MISSING"
+);
 
-const apiSecret =
-  process.env.CLOUDINARY_API_SECRET;
+console.log(
+  "CLOUDINARY_API_SECRET:",
+  process.env.CLOUDINARY_API_SECRET
+    ? "LOADED"
+    : "MISSING"
+);
 
-if (!cloudName) {
-  console.error(
-    "CLOUDINARY_CLOUD_NAME is missing"
-  );
-}
-
-if (!apiKey) {
-  console.error(
-    "CLOUDINARY_API_KEY is missing"
-  );
-}
-
-if (!apiSecret) {
-  console.error(
-    "CLOUDINARY_API_SECRET is missing"
-  );
-}
-
-// =====================================================
-// CONFIGURE CLOUDINARY
-// =====================================================
+console.log("========================================");
 
 cloudinary.config({
-  cloud_name: cloudName,
-  api_key: apiKey,
-  api_secret: apiSecret,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-// =====================================================
-// EXPORT
-// =====================================================
 
 export default cloudinary;
