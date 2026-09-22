@@ -14,8 +14,13 @@ function uploadBuffer(
         resource_type: "image",
       },
       (error, result) => {
-        if (error || !result) {
-          reject(error || new Error("Cloudinary upload failed"));
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        if (!result) {
+          reject(new Error("Cloudinary did not return an upload result"));
           return;
         }
 
@@ -32,11 +37,16 @@ export const uploadProductImages = async (
   res: Response
 ): Promise<void> => {
   try {
-    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+    if (
+      !process.env.CLOUDINARY_CLOUD_NAME ||
+      !process.env.CLOUDINARY_API_KEY ||
+      !process.env.CLOUDINARY_API_SECRET
+    ) {
       res.status(503).json({
         success: false,
-        message: "Cloudinary is not configured on the server",
+        message: "Cloudinary is not fully configured on the server",
       });
+
       return;
     }
 
@@ -47,15 +57,19 @@ export const uploadProductImages = async (
         success: false,
         message: "At least one image is required",
       });
+
       return;
     }
 
     const uploads = await Promise.all(
-      files.map((file) => uploadBuffer(file.buffer, "mulberries/products"))
+      files.map((file) =>
+        uploadBuffer(file.buffer, "mulberries/products")
+      )
     );
 
     res.status(201).json({
       success: true,
+      message: "Product images uploaded successfully",
       images: uploads.map((upload) => ({
         url: upload.secure_url,
         publicId: upload.public_id,
@@ -64,9 +78,14 @@ export const uploadProductImages = async (
   } catch (error) {
     console.error("UPLOAD PRODUCT IMAGES ERROR:", error);
 
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Failed to upload product images";
+
     res.status(500).json({
       success: false,
-      message: "Failed to upload product images",
+      message,
     });
   }
 };
