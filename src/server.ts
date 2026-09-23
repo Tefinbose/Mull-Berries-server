@@ -30,33 +30,6 @@ import adminStaffRoutes from "./routes/adminStaffRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 
 // =====================================================
-// CLOUDINARY ENV CHECK
-// =====================================================
-
-console.log("=================================");
-console.log("CLOUDINARY ENVIRONMENT CHECK");
-console.log("=================================");
-
-console.log(
-  "CLOUDINARY_CLOUD_NAME:",
-  process.env.CLOUDINARY_CLOUD_NAME || "MISSING"
-);
-
-console.log(
-  "CLOUDINARY_API_KEY:",
-  process.env.CLOUDINARY_API_KEY || "MISSING"
-);
-
-console.log(
-  "CLOUDINARY_API_SECRET:",
-  process.env.CLOUDINARY_API_SECRET
-    ? "LOADED"
-    : "MISSING"
-);
-
-console.log("=================================");
-
-// =====================================================
 // APP
 // =====================================================
 

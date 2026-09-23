@@ -85,11 +85,6 @@ export const uploadProductImages = async (
     const files =
       (req.files as Express.Multer.File[]) || [];
 
-    console.log(
-      "Number of uploaded files:",
-      files.length
-    );
-
     // =================================================
     // CHECK FILES
     // =================================================
@@ -111,11 +106,6 @@ export const uploadProductImages = async (
 
     const uploads = await Promise.all(
       files.map((file) => {
-        console.log(
-          "Uploading:",
-          file.originalname
-        );
-
         return uploadBuffer(
           file.buffer,
           "mulberries/products"

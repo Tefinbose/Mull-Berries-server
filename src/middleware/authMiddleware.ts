@@ -45,8 +45,6 @@ export const protect = (
     const secret = process.env.JWT_SECRET;
 
     if (!secret) {
-      console.error("JWT_SECRET is not configured");
-
       res.status(500).json({
         success: false,
         message: "JWT secret is not configured",
@@ -57,24 +55,14 @@ export const protect = (
     // 4. Verify JWT
     const decoded = jwt.verify(token, secret) as JwtPayload;
 
-    // 5. DEBUG LOGS
-    console.log("=================================");
-    console.log("AUTHENTICATION DEBUG");
-    console.log("JWT USER ID:", decoded.userId);
-    console.log("JWT ROLE:", decoded.role);
-    console.log("JWT PERMISSIONS:", decoded.permissions);
-    console.log("=================================");
-
-    // 6. Store authentication data in request
+    // 5. Store authentication data in request
     req.userId = decoded.userId;
     req.role = decoded.role;
     req.permissions = decoded.permissions || [];
 
-    // 7. Continue
+    // 6. Continue
     next();
   } catch (error) {
-    console.error("JWT ERROR:", error);
-
     res.status(401).json({
       success: false,
       message: "Invalid or expired token",
@@ -95,9 +83,6 @@ export const authorize = (...allowedRoles: string[]) => {
       });
       return;
     }
-
-    console.log("AUTHORIZE ROLE:", req.role);
-    console.log("ALLOWED ROLES:", allowedRoles);
 
     if (!allowedRoles.includes(req.role)) {
       res.status(403).json({

@@ -40,8 +40,6 @@ const generateToken = (
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log("REGISTER REQUEST:", req.body);
-
     const { name, email, password, phone } = req.body;
 
     // 1. Validate input
@@ -77,8 +75,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    console.log("Creating user...");
-
     // 4. Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -92,14 +88,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       isActive: true,
     });
 
-    console.log("USER CREATED:", user._id.toString());
-
     // 6. Generate JWT
-    console.log("Generating token...");
-
     const token = generateToken(user._id.toString(), user.role);
-
-    console.log("TOKEN GENERATED");
 
     // 7. Send response
     res.status(201).json({
@@ -115,8 +105,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         isActive: user.isActive,
       },
     });
-
-    console.log("REGISTRATION RESPONSE SENT");
   } catch (error) {
     console.error("REGISTER ERROR:", error);
 
