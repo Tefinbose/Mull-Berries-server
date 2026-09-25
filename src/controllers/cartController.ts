@@ -139,21 +139,24 @@ export const addToCart = async (
       );
 
       if (!variant) {
-        res.status(404).json({
-          success: false,
-          message: "Product variant not found",
-        });
-        return;
-      }
+        if (product.stock < quantity) {
+          res.status(400).json({
+            success: false,
+            message: "Insufficient product stock",
+          });
+          return;
+        }
+      } else {
+        itemPrice = variant.price ?? product.price;
+        const availableStock = Math.max(Number(variant.stock) || 0, Number(product.stock) || 0);
 
-      itemPrice = variant.price ?? product.price;
-
-      if (variant.stock < quantity) {
-        res.status(400).json({
-          success: false,
-          message: "Insufficient variant stock",
-        });
-        return;
+        if (availableStock < quantity) {
+          res.status(400).json({
+            success: false,
+            message: "Insufficient variant stock",
+          });
+          return;
+        }
       }
     } else {
       if (product.stock < quantity) {
@@ -197,7 +200,11 @@ export const addToCart = async (
             item.sku === variantId
         );
 
-        if (variant && newQuantity > variant.stock) {
+        const availableStock = variant
+          ? Math.max(Number(variant.stock) || 0, Number(product.stock) || 0)
+          : Number(product.stock) || 0;
+
+        if (newQuantity > availableStock) {
           res.status(400).json({
             success: false,
             message: "Requested quantity exceeds available stock",
@@ -327,22 +334,27 @@ export const updateCartItem = async (
       );
 
       if (!variant) {
-        res.status(404).json({
-          success: false,
-          message: "Variant not found",
-        });
-        return;
-      }
+        if (quantity > product.stock) {
+          res.status(400).json({
+            success: false,
+            message: "Requested quantity exceeds stock",
+          });
+          return;
+        }
+        item.price = product.price;
+      } else {
+        const availableStock = Math.max(Number(variant.stock) || 0, Number(product.stock) || 0);
 
-      if (quantity > variant.stock) {
-        res.status(400).json({
-          success: false,
-          message: "Requested quantity exceeds stock",
-        });
-        return;
-      }
+        if (quantity > availableStock) {
+          res.status(400).json({
+            success: false,
+            message: "Requested quantity exceeds stock",
+          });
+          return;
+        }
 
-      item.price = variant.price ?? product.price;
+        item.price = variant.price ?? product.price;
+      }
     } else {
       if (quantity > product.stock) {
         res.status(400).json({

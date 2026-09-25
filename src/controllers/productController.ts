@@ -275,6 +275,73 @@ export const updateProduct = async (
     }
 
     // ==========================================
+    // Sync variants stock if stock is updated
+    // ==========================================
+
+    if (req.body.stock !== undefined) {
+      const newStock = Math.max(0, Number(req.body.stock) || 0);
+      req.body.stock = newStock;
+
+      if (!req.body.variants) {
+        if (product.variants && product.variants.length > 0) {
+          const variants = product.variants.map((v: any) =>
+            v.toObject ? v.toObject() : { ...v }
+          );
+
+          if (variants.length === 1) {
+            variants[0].stock = newStock;
+          } else {
+            const currentSum = variants.reduce(
+              (sum: number, v: any) => sum + (Number(v.stock) || 0),
+              0
+            );
+
+            if (currentSum === 0 && newStock > 0) {
+              const perVariant = Math.floor(newStock / variants.length);
+              const rem = newStock % variants.length;
+              variants.forEach((v: any, idx: number) => {
+                v.stock = perVariant + (idx === 0 ? rem : 0);
+              });
+            } else if (newStock === 0) {
+              variants.forEach((v: any) => {
+                v.stock = 0;
+              });
+            } else if (currentSum > 0) {
+              const factor = newStock / currentSum;
+              let allocated = 0;
+              variants.forEach((v: any, idx: number) => {
+                if (idx === variants.length - 1) {
+                  v.stock = Math.max(0, newStock - allocated);
+                } else {
+                  const s = Math.round((Number(v.stock) || 0) * factor);
+                  v.stock = s;
+                  allocated += s;
+                }
+              });
+            }
+          }
+
+          req.body.variants = variants;
+        } else {
+          req.body.variants = [
+            {
+              name: "Standard",
+              sku: `${product.slug || product._id}-default`,
+              price: product.price,
+              stock: newStock,
+              attributes: { size: "Free Size", color: "Standard" },
+            },
+          ];
+        }
+      }
+    } else if (req.body.variants && req.body.stock === undefined) {
+      req.body.stock = req.body.variants.reduce(
+        (sum: number, v: any) => sum + (Number(v.stock) || 0),
+        0
+      );
+    }
+
+    // ==========================================
     // Update product
     // ==========================================
 

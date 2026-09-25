@@ -388,6 +388,51 @@ export const updateStaffInventoryStock = async (
 
     product.stock = numericStock;
 
+    if (product.variants && product.variants.length > 0) {
+      if (product.variants.length === 1) {
+        product.variants[0].stock = numericStock;
+      } else {
+        const currentSum = product.variants.reduce(
+          (sum: number, v: any) => sum + (Number(v.stock) || 0),
+          0
+        );
+
+        if (currentSum === 0 && numericStock > 0) {
+          const perVariant = Math.floor(numericStock / product.variants.length);
+          const rem = numericStock % product.variants.length;
+          product.variants.forEach((v: any, idx: number) => {
+            v.stock = perVariant + (idx === 0 ? rem : 0);
+          });
+        } else if (numericStock === 0) {
+          product.variants.forEach((v: any) => {
+            v.stock = 0;
+          });
+        } else if (currentSum > 0) {
+          const factor = numericStock / currentSum;
+          let allocated = 0;
+          product.variants.forEach((v: any, idx: number) => {
+            if (idx === product.variants.length - 1) {
+              v.stock = Math.max(0, numericStock - allocated);
+            } else {
+              const s = Math.round((Number(v.stock) || 0) * factor);
+              v.stock = s;
+              allocated += s;
+            }
+          });
+        }
+      }
+    } else {
+      product.variants = [
+        {
+          name: "Standard",
+          sku: `${product.slug || product._id}-default`,
+          price: product.price,
+          stock: numericStock,
+          attributes: new Map([["size", "Free Size"], ["color", "Standard"]]),
+        } as any,
+      ];
+    }
+
     await product.save();
 
     /*

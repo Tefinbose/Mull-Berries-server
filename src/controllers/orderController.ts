@@ -195,22 +195,29 @@ export const createOrder = async (
         );
 
         if (!variant) {
-          res.status(400).json({
-            success: false,
-            message: `Selected variant for ${product.name} is unavailable`,
-          });
-          return;
-        }
+          if (product.stock < cartItem.quantity) {
+            res.status(400).json({
+              success: false,
+              message: `Insufficient stock for ${product.name}`,
+            });
+            return;
+          }
+        } else {
+          const effectiveStock = Math.max(
+            Number(variant.stock) || 0,
+            Number(product.stock) || 0
+          );
 
-        if (variant.stock < cartItem.quantity) {
-          res.status(400).json({
-            success: false,
-            message: `Insufficient stock for ${product.name}`,
-          });
-          return;
-        }
+          if (effectiveStock < cartItem.quantity) {
+            res.status(400).json({
+              success: false,
+              message: `Insufficient stock for ${product.name}`,
+            });
+            return;
+          }
 
-        itemPrice = Number(variant.price);
+          itemPrice = Number(variant.price) || itemPrice;
+        }
       } else {
         if (product.stock < cartItem.quantity) {
           res.status(400).json({
@@ -301,11 +308,11 @@ export const createOrder = async (
         );
 
         if (variant) {
-          variant.stock -= cartItem.quantity;
+          variant.stock = Math.max(0, (Number(variant.stock) || 0) - cartItem.quantity);
         }
-      } else {
-        product.stock -= cartItem.quantity;
       }
+
+      product.stock = Math.max(0, (Number(product.stock) || 0) - cartItem.quantity);
 
       await product.save();
     }
