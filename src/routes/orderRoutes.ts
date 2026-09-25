@@ -6,6 +6,7 @@ import {
   getMyOrderById,
   cancelMyOrder,
   createGuestOrder,
+  getGuestOrderById,
   getMyOrderShipment,
 } from "../controllers/orderController";
 import {
@@ -25,6 +26,7 @@ import {
 const router = Router();
 
 router.post("/guest", createGuestOrder);
+router.get("/guest/:id", getGuestOrderById);
 
 router.use(protect);
 

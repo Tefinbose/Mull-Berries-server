@@ -15,15 +15,6 @@ export const createRazorpayOrder =
     res: Response
   ): Promise<void> => {
     try {
-      if (!req.userId) {
-        res.status(401).json({
-          success: false,
-          message:
-            "Authentication required",
-        });
-        return;
-      }
-
       const { orderId } = req.body;
 
       if (!orderId) {
@@ -46,11 +37,12 @@ export const createRazorpayOrder =
         return;
       }
 
+      const orderQuery = req.userId
+        ? { _id: orderId, user: req.userId }
+        : { _id: orderId, $or: [{ user: null }, { user: { $exists: false } }] };
+
       const order =
-        await Order.findOne({
-          _id: orderId,
-          user: req.userId,
-        });
+        await Order.findOne(orderQuery);
 
       if (!order) {
         res.status(404).json({
@@ -137,13 +129,13 @@ export const createRazorpayOrder =
           notes: {
             orderId:
               order._id.toString(),
-            userId: req.userId,
+            userId: req.userId || "guest",
           },
         });
 
       const payment =
         await Payment.create({
-          user: req.userId,
+          user: req.userId || null,
           order: order._id,
           razorpayOrderId:
             razorpayOrder.id,
@@ -275,6 +267,7 @@ export const verifyRazorpayPayment =
 
       if (
         req.userId &&
+        payment.user &&
         payment.user.toString() !==
           req.userId
       ) {

@@ -5,13 +5,13 @@ import {
   verifyRazorpayPayment,
 } from "../controllers/paymentController";
 
-import { protect } from "../middleware/authMiddleware";
+import { optionalProtect } from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.post(
   "/create-order",
-  protect,
+  optionalProtect,
   createRazorpayOrder
 );
 

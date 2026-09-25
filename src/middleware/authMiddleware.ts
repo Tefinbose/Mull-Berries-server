@@ -70,6 +70,46 @@ export const protect = (
   }
 };
 
+export const optionalProtect = (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      next();
+      return;
+    }
+
+    const token = authHeader.substring(7).trim();
+
+    if (!token) {
+      next();
+      return;
+    }
+
+    const secret = process.env.JWT_SECRET;
+
+    if (!secret) {
+      next();
+      return;
+    }
+
+    const decoded = jwt.verify(token, secret) as JwtPayload;
+
+    req.userId = decoded.userId;
+    req.role = decoded.role;
+    req.permissions = decoded.permissions || [];
+
+    next();
+  } catch {
+    // For optional authentication, invalid or missing token simply continues as guest
+    next();
+  }
+};
+
 export const authorize = (...allowedRoles: string[]) => {
   return (
     req: AuthRequest,

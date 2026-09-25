@@ -8,7 +8,7 @@ export type PaymentStatus =
   | "refunded";
 
 export interface IPayment extends Document {
-  user: Types.ObjectId;
+  user?: Types.ObjectId | null;
   order: Types.ObjectId;
 
   razorpayOrderId: string;
@@ -29,7 +29,8 @@ const paymentSchema = new Schema<IPayment>(
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+      default: null,
       index: true,
     },
 

@@ -873,6 +873,53 @@ export const createGuestOrder = async (
     });
   }
 };
+
+// ============================================================
+// GET GUEST ORDER BY ID
+// ============================================================
+
+export const getGuestOrderById = async (
+  req: any,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid order ID",
+      });
+      return;
+    }
+
+    const order = await Order.findOne({
+      _id: id,
+      $or: [{ user: null }, { user: { $exists: false } }],
+    }).populate("items.product", "name slug images price");
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: "Guest order not found",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.error("GET GUEST ORDER ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to get guest order",
+    });
+  }
+};
+
 export const getMyOrderShipment = async (
   req: AuthRequest,
   res: Response,
